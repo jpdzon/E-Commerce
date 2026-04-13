@@ -4,7 +4,7 @@
 }
 
 body {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/background.jpg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/4-Pillars-III-COLOR-MODIFIED-2048x1365-1.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     height: 100vh;
@@ -33,7 +33,7 @@ body {
 }
 
 .base .base-content .form h3 {
-    color: #20D489;
+    color: rgb(62, 91, 239);
     font-family: cursive;
     font-size: 30px;
 }
