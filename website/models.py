@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 class UserMongo(UserMixin):
-    """Flask-Login wrapper for MongoDB customer documents."""
     def __init__(self, customer_doc):
         self.id = str(customer_doc.get('_id'))
         self.email = customer_doc.get('email')
