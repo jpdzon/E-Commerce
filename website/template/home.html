@@ -4,64 +4,137 @@
 
 
 {% block body %}
-
-<div class="container text-center">
-    <div class="row" style="margin: 10px;">
-        <div class="col " style="margin: 3px;">
-            <div class="list-group" id="right1">
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-shopping-basket" aria-hidden="true"></i>
-                    <span class="link-name">Alingal</span>
-                </a>
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-camera" aria-hidden="true"></i>
-                    <span class="link-name">Bonoan</span>
-                </a>
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-audio-description" aria-hidden="true"></i>
-                    <span class="link-name">Phelan</span>
-                </a>
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-cubes" aria-hidden="true"></i>
-                    <span class="link-name">Covered Court</span>
-                </a>
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-child" aria-hidden="true"></i>
-                    <span class="link-name">Gymnasium</span>
-                </a>
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-bicycle" aria-hidden="true"></i>
-                    <span class="link-name">Xavier</span>
-                </a>
-                <a href="" class="list-group-item list-group-item-action">
-                    <i class="fa fa-binoculars" aria-hidden="true"></i>
-                    <span class="link-name">Santos</span>
-                </a>
+<div class="container" style="margin-top: 80px;">
+    <div class="row">
+        <div class="col-12">
+            <div id="calendar" style="background-color: white; padding: 15px; border-radius: 10px; min-height: 500px;">
             </div>
-        </div>
-
-
-        <div class="row" style="margin-top: 12px;">
-            <div id="calendar"></div>
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     var calendarEl = document.getElementById('calendar');
+                    var selectedEvent = null;
 
                     var calendar = new FullCalendar.Calendar(calendarEl, {
                         initialView: 'dayGridMonth',
+                        editable: true,
+                        selectable: true,
+                        events: '/events',
 
-                        events: '/events'  // Flask route to fetch events
+                        // CREATE — click on an empty date
+                        dateClick: function (info) {
+                            document.getElementById('eventId').value = '';
+                            document.getElementById('eventTitle').value = '';
+                            document.getElementById('eventStart').value = info.dateStr + 'T08:00';
+                            document.getElementById('eventEnd').value = info.dateStr + 'T09:00';
+                            document.getElementById('eventLocation').value = '';
+                            document.getElementById('modalTitle').innerText = 'New Booking';
+                            document.getElementById('deleteBtn').style.display = 'none';
+                            new bootstrap.Modal(document.getElementById('eventModal')).show();
+                        },
+
+                        // UPDATE — click on an existing event
+                        eventClick: function (info) {
+                            selectedEvent = info.event;
+                            document.getElementById('eventId').value = selectedEvent.id;
+                            document.getElementById('eventTitle').value = selectedEvent.title;
+                            document.getElementById('eventStart').value = selectedEvent.startStr.substring(0, 16);
+                            document.getElementById('eventEnd').value = selectedEvent.endStr ? selectedEvent.endStr.substring(0, 16) : '';
+                            document.getElementById('eventLocation').value = selectedEvent.extendedProps.location || '';
+                            document.getElementById('modalTitle').innerText = 'Edit Booking';
+                            document.getElementById('deleteBtn').style.display = 'inline-block';
+                            new bootstrap.Modal(document.getElementById('eventModal')).show();
+                        },
+
+                        // DRAG to reschedule
+                        eventDrop: function (info) {
+                            fetch('/events/update/' + info.event.id, {
+                                method: 'PUT',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    title: info.event.title,
+                                    start: info.event.startStr,
+                                    end: info.event.endStr,
+                                    location: info.event.extendedProps.location
+                                })
+                            });
+                        }
                     });
 
                     calendar.render();
+
+                    // SAVE (create or update)
+                    document.getElementById('saveEventBtn').addEventListener('click', function () {
+                        var id = document.getElementById('eventId').value;
+                        var payload = {
+                            title: document.getElementById('eventTitle').value,
+                            start: document.getElementById('eventStart').value,
+                            end: document.getElementById('eventEnd').value,
+                            location: document.getElementById('eventLocation').value
+                        };
+                        var url = id ? '/events/update/' + id : '/events/create';
+                        var method = id ? 'PUT' : 'POST';
+
+                        fetch(url, {
+                            method: method,
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(payload)
+                        }).then(function () {
+                            calendar.refetchEvents();
+                            bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                        });
+                    });
+
+                    // DELETE
+                    document.getElementById('deleteBtn').addEventListener('click', function () {
+                        var id = document.getElementById('eventId').value;
+                        if (confirm('Delete this booking?')) {
+                            fetch('/events/delete/' + id, {method: 'DELETE'})
+                                .then(function () {
+                                    calendar.refetchEvents();
+                                    bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                                });
+                        }
+                    });
                 });
             </script>
-
         </div>
     </div>
 </div>
 
-
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="eventId">
+                <div class="mb-3">
+                    <label>Title</label>
+                    <input type="text" class="form-control" id="eventTitle" placeholder="e.g. Room Booking">
+                </div>
+                <div class="mb-3">
+                    <label>Start</label>
+                    <input type="datetime-local" class="form-control" id="eventStart">
+                </div>
+                <div class="mb-3">
+                    <label>End</label>
+                    <input type="datetime-local" class="form-control" id="eventEnd">
+                </div>
+                <div class="mb-3">
+                    <label>Location</label>
+                    <input type="text" class="form-control" id="eventLocation" placeholder="e.g. Gymnasium">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteBtn" class="btn btn-danger" style="display:none;">Delete</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="saveEventBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container text-center">
     <div class="row" style="margin: 8px;">
         <div class="col"
