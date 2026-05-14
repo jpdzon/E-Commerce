@@ -87,7 +87,7 @@
                     // DELETE
                     document.getElementById('deleteBtn').addEventListener('click', function () {
                         var id = document.getElementById('eventId').value;
-                        if (confirm('Delete this booking?')) {
+                        if (confirm('Delete this Event?')) {
                             fetch('/events/delete/' + id, {method: 'DELETE'})
                                 .then(function () {
                                     calendar.refetchEvents();

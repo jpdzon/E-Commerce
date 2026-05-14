@@ -9,10 +9,7 @@ def create_app():
     app = Flask(__name__, template_folder="template", static_folder="static")
     app.config["SECRET_KEY"] = "asdcsdef"
 
-    mongo_uri = os.environ.get(
-        "MONGO_URI",
-        "mongodb+srv://jpdizon_db_user:adminpassword1@cluster0.x7lilun.mongodb.net/?Trends-Project=Cluster0",
-    )
+    mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
     client = MongoClient(mongo_uri)
     db = client["mydatabase"]
 

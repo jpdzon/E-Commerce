@@ -40,4 +40,4 @@ run = ["bash", "start.sh"]
 [userenv]
 
 [userenv.shared]
-MONGO_URI = "mongodb+srv://jpdizon_db_user:adminpassword1@cluster0.x7lilun.mongodb.net/?appName=Cluster0"
+MONGO_URI = "mongodb+srv://jpdizon_db_user:Scheduler2026@cluster0.x7lilun.mongodb.net/?appName=Cluster0"
