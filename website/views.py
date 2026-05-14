@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, jsonify, request, current_app
 from bson import ObjectId
-
+from flask_login import login_required, current_user
 views = Blueprint("views", __name__)
 
 
 @views.route("/")
+@login_required
 def home():
     return render_template("home.html", items=[])
 
@@ -23,6 +24,7 @@ def events():
                 "start": e["start"],
                 "end": e.get("end", ""),
                 "location": e.get("location", ""),
+                 "created_by": e.get("created_by", "")
             }
         )
     return jsonify(result)
@@ -38,6 +40,7 @@ def create_event():
         "start": data["start"],
         "end": data.get("end", ""),
         "location": data.get("location", ""),
+        "created_by": current_user.id
     }
     result = db.events.insert_one(new_event)
     return jsonify({"id": str(result.inserted_id)})
