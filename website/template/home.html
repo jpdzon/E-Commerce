@@ -41,71 +41,22 @@
         </div>
 
 
-        <div class="col-md-7" style="margin: 3px;">
-            <img src="../static/images/Ateneo-de-Naga-Tuition-Fee.jpg" alt=""
-                style="width: 600px; height: 365px; border-radius: 10px;">
-        </div>
-        <div class="col-md-2">
-            <div class="row" style="background-color: white; border-radius: 10px;">
+        <div class="row" style="margin-top: 12px;">
+            <div id="calendar"></div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var calendarEl = document.getElementById('calendar');
 
-                <div class="row" style="display: flex; margin-top: 5px;">
-                    <div class="col">
-                        <img src="../static/images/help.png" alt=""
-                            style="width: 30px; height: 30px; margin-left: -30px;">
-                    </div>
-                    <div class="col">
-                        <h6
-                            style="font-family:'Times New Roman', Times, serif; font-size: 12px; margin-left: -40px; font-weight: 600;">
-                            HELP CENTER</h6>
-                        <p style="font-size: small; color: gray; margin-left: -30px; margin-top: -10px;">Customer care
-                        </p>
-                    </div>
-                </div>
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
 
-                <div class="row" style="display: flex; margin-top: 5px;">
-                    <div class="col">
-                        <img src="../static/images/return.png" alt=""
-                            style="width: 30px; height: 30px; margin-left: -30px;">
-                    </div>
-                    <div class="col">
-                        <h6
-                            style="font-family:'Times New Roman', Times, serif; font-size: 12px; margin-left: -40px; font-weight: 600;">
-                            EASY RETURN</h6>
-                        <p style="font-size: small; color: gray; margin-left: -30px; margin-top: -10px;">Quick Refund
-                        </p>
-                    </div>
-                </div>
-
-                <div class="row" style="display: flex; margin-top: 5px;">
-                    <div class="col">
-                        <img src="../static/images/payment.png" alt=""
-                            style="width: 30px; height: 30px; margin-left: -30px;">
-                    </div>
-                    <div class="col">
-                        <h6
-                            style="font-family:'Times New Roman', Times, serif; font-size: 12px; margin-left: -40px; font-weight: 600;">
-                            SELL ON BILI</h6>
-                        <p style="font-size: small; color: gray; margin-left: -30px; margin-top: -10px;">FBA Program</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="margin-top: 12px;">
-                <div id="calendar"></div>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        var calendarEl = document.getElementById('calendar');
-
-                        var calendar = new FullCalendar.Calendar(calendarEl, {
-                            initialView: 'dayGridMonth',
-
-                            events: '/events'  // Flask route to fetch events
-                        });
-
-                        calendar.render();
+                        events: '/events'  // Flask route to fetch events
                     });
-                </script>
 
-            </div>
+                    calendar.render();
+                });
+            </script>
+
         </div>
     </div>
 </div>
